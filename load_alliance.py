@@ -10,7 +10,7 @@ from datetime import datetime, timezone
 
 
 zkb_url = 'https://zkillboard.com'
-path = '/alliance/99014177/'
+path = '/alliance/99014727/'
 hours_to_show = 12
 our_id = path.split('/')[2]
 
