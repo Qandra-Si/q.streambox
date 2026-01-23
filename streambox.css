@@ -1,0 +1,124 @@
+/* Author: Qandra Si */
+
+body { background-color: #000; margin: 0px auto; overflow: hidden; }
+
+:root {
+    --max-kills: 25;   /* Number of kills to display (1–25 recommended) */
+    --vertical: 1;     /* 0 = horizontal layout, 1 = vertical layout */
+}
+
+/* убрать надпись zKill  (появляется в вертикальной ориентации) */
+#promoShort { display: none }
+/* убрать надпись zKill  (появляется в горизонтальной ориентации) */
+#promoLong { display: none }
+
+/* скрывать иконку Tech I */
+.pip[src*="/img/pips/pip_tech1.png"] {
+  display: none;
+}
+/* расположить иконку альянса/корпорации жертвы */
+.alliance {
+  display: block;
+  position: absolute;
+  top: 44px;
+  left: 40px;
+  transform: scale(calc(var(--sizei) / 64));
+  object-position: 0 0;
+  transform-origin: 0 0;
+  width: 30px;
+  height: 30px;
+  image-rendering: crisp-edges;
+  /* fallback */
+  image-rendering: pixelated;
+}
+/* расположить маркер solo */
+div.solo {
+  display: block;
+  position: absolute;
+  top: 56px;
+  left: -1px;
+  transform: scale(calc(var(--sizei) / 64));
+  object-position: 0 0;
+  transform-origin: 0 0;
+}
+div.solo > font {
+  font-size: 66%;
+  font-family: "Droid Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+  padding: 0px;
+  margin: 0px;
+  background-color: rgb(85, 128, 0);
+  border: 1px solid #ffffff60;
+  border-radius: 4px;
+}
+/* расположить маркер points */
+div.points {
+  display: block;
+  #float: right;
+  position: absolute;
+  top: 0px;
+  right: -3px;
+  #left: 46px;
+  transform: scale(calc(var(--sizei) / 64));
+  object-position: 0 0;
+  transform-origin: 0 0;
+}
+div.points > font {
+  font-size: 75%;
+  font-weight: bold;
+  font-family: "Droid Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+  padding: 0px;
+  margin: 0px;
+  background-color: #080808;
+  border: 1px solid #ffffff60;
+  border-radius: 4px;
+}
+div.points.kill > font {
+  #color: #ababab;
+  color: green;
+}
+div.points.victim > font {
+  #color: #ababab;
+  color: red;
+}
+
+/* красная рамка вокруг иконки слива */
+#content > div:has(.lost) .shipImageSpan { background-color: #ff0000; }
+/* зелёная рамка вокруг иконки кила */
+#content > div:has(.killed) .shipImageSpan { background-color: #008000; }
+
+/* убрать пиктограмму-крестик слива, который показывается перед ISK(ами) */
+.lost:before { display: none }
+/* изменить стиль шрифт идентично тому, что используется на zkb */
+.lost, .killed {
+  font-family: "Droid Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+  font-weight: 500;
+  color: #ffffff; }
+
+/* подгонка 13 плиток килов под разрешение 1080px по вертикали (высота плитки д.б. 81px)
+   внимание: следующие расчёты только для вертикальной ориентации
+   стандартные размеры:
+     ширина плиток: 60px + 2*2px padding = 64px
+     высота плитки: 60px + 2*2px padding + 1px margin + 14px шрифт + 2px margin = 81px */
+/*.shipImageSpan { margin-bottom: 1px; }
+.lost, .killed { font-size: 12px; margin-bottom: 2px; }
+#content > div:has(.lost) .shipImageSpan, div:has(.killed) .shipImageSpan { padding: 2px; }
+*/
+
+/* подгонка 12 плиток килов под разрешение 1080px по вертикали (высота плитки д.б. 90px)
+   внимание: следующие расчёты только для вертикальной ориентации
+   стандартные размеры:
+     ширина плиток: 60px + 2*3px padding = 66px
+     высота плитки: 1px margin + 60px + 2*3px padding + 1px margin + 17px шрифт + 5px margin = 90px */
+.shipImageSpan { margin-top: 1px; margin-bottom: 1px; }
+.lost, .killed { font-size: 14px; margin-bottom: 5px; }
+#content > div:has(.lost) .shipImageSpan, div:has(.killed) .shipImageSpan { padding: 3px; }
+
+/* убрать из списка килов пустые яйца и трактора */
+/*#content > div:has(span img[alt*="Capsule"]),*/
+#content > div:has(span img[alt*="Capsule"]):has(> [isk="10000"]),
+#content > div:has(span img[alt*="Mobile Tractor Unit"]) {
+  display: none !important;
+}
+
+/* скрыть иконку альянса/корпорации жертвы */
+/*.alliance { display: none; }*/
