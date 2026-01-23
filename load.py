@@ -87,6 +87,8 @@ class HttpHandler(BaseHTTPRequestHandler):
                     continue
 
                 html_data = load_html_from_url(f"{zkb_url}/cache/24hour/killlistrow/{kill}/")
+                if not html_data:
+                    continue
                 soup = BeautifulSoup(html_data, "lxml")
                 
                 info = soup.find('tr', class_='kltbd')
