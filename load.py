@@ -59,14 +59,14 @@ class HttpHandler(BaseHTTPRequestHandler):
         if requested_path != "/":
             self.send_error(404, "File Not Found")
             return
-        
+
         current_utc_time = int(datetime.now(timezone.utc).timestamp())
         print(f"current_utc_time = {current_utc_time}")
         after_epoch = current_utc_time - (3600 * hours_to_show)  # show kills N hours old or less
         #print(f"after_epoch = {after_epoch}")
         #json_data = load_json_from_url(f"{zkb_url}/cache/24hour/killlist/?s=94620140&u=" + path)
         json_data = load_json_from_url(f"{zkb_url}/cache/bypass/killlist/?u=" + path)
-        
+
         content = ''
         if json_data:
             content = ' '
@@ -90,7 +90,7 @@ class HttpHandler(BaseHTTPRequestHandler):
                 if not html_data:
                     continue
                 soup = BeautifulSoup(html_data, "lxml")
-                
+
                 info = soup.find('tr', class_='kltbd')
                 vics = info['vics']
                 #print(f"  vics = {vics}")
@@ -147,7 +147,7 @@ class HttpHandler(BaseHTTPRequestHandler):
                             add_class = 'victim' if is_victim else 'kill'
                             plus_minus = '-' if is_victim else '+'
                             image = image[:-7] + f'<div class="points {add_class}"><font>&nbsp;{points}&nbsp;</font></div>' + '</span>'
-                #print(f"  points = {points}")                
+                #print(f"  points = {points}")
                 wrapper = f"""<div style="display: inline-block; text-align: center;">
 {image}
 <div class="{'lost' if is_victim else 'killed'}" isk="{isk_num}">{isk}</div>
@@ -181,7 +181,7 @@ class HttpHandler(BaseHTTPRequestHandler):
         #            killed_isk += cached['isk']
         #    lost: {formatISK(lost_isk)}<br>
         #    kill: {formatISK(killed_isk)}
-                    
+
         message = f"""<html>
 <head>
  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
@@ -189,7 +189,7 @@ class HttpHandler(BaseHTTPRequestHandler):
 {css}
 </head>
 <body>
- <div id='content'>{content}</div> 
+ <div id='content'>{content}</div>
  <div id='promoLong' class='hideme'>zKillboard.com<span id='pathname' style="display: none;"></span></div>
  <div id='promoShort' class='hideme'>zKill<span id='pathname' style="display: none;"></span></div>
  <div id='contenttemp' style='display: none;'></div>
