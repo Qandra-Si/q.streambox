@@ -1,0 +1,20 @@
+[Unit]
+Description=Q.ZKStreambox alliance daemon
+After=network.target syslog.target dbus.target polkit.service
+
+[Service]
+Type=simple
+User=<вписать-пользователя>
+Group=<вписать-пользователя>
+
+EnvironmentFile=-/etc/default/q_streambox
+WorkingDirectory=<вписать путь>
+ExecStart=<вписать путь>/.venv/bin/python3 <вписать путь>/load_alliance.py
+
+#Restart=always
+Restart=on-failure
+RestartSec=15
+#TimeoutStopSpec=10
+
+[Install]
+WantedBy=multi-user.target

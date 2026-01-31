@@ -1,1 +1,3 @@
-.venv/
+/.venv/
+/q_streambox.service
+/q_streambox_alliance.service

@@ -60,15 +60,38 @@ sudo nginx -t
 sudo systemctl restart nginx
 ```
 
-Запустить в `screen` команду (выйти с помощью `Ctrl+A+D`):
+Либо запустить в `screen` команды (выйти с помощью `Ctrl+A+D`):
 
 ```bash
 .venv/bin/python3 load.py
+.venv/bin/python3 load_alliance.py
 ```
 
-Запустить в `screen` ещё одну команду (выйти с помощью `Ctrl+A+D`):
+Либо создать systemd service(s):
 
 ```bash
-.venv/bin/python3 load_alliance.py
+# скопируй и настрой q_streambox.service
+cp q_streambox.service.template q_streambox.service
+# впиши имя пользователя и путь к директории с программой
+nano q_streambox.service
+# установка и запуск сервиса
+sudo mv -fv q_streambox.service /lib/systemd/system/q_streambox.service
+sudo chmod 644 /lib/systemd/system/q_streambox.service
+sudo systemctl --system daemon-reload
+sudo systemctl restart q_streambox.service
+# см. лог работы
+sudo journalctl -f -u q_streambox
+
+# скопируй и настрой q_streambox_alliance.service
+cp q_streambox_alliance.service.template q_streambox_alliance.service
+# впиши имя пользователя и путь к директории с программой
+nano q_streambox_alliance.service
+# установка и запуск сервиса
+sudo mv -fv q_streambox_alliance.service /lib/systemd/system/q_streambox_alliance.service
+sudo chmod 644 /lib/systemd/system/q_streambox_alliance.service
+sudo systemctl --system daemon-reload
+sudo systemctl restart q_streambox_alliance.service
+# см. лог работы
+sudo journalctl -f -u q_streambox_alliance
 ```
 
