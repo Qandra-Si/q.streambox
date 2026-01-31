@@ -3,7 +3,9 @@
 # pip install beautifulsoup4 lxml
 import os
 import json
-from urllib.request import urlopen
+import gzip
+import zlib
+from urllib import request
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from bs4 import BeautifulSoup
 from datetime import datetime, timezone
@@ -14,11 +16,41 @@ path = '/character/1904811443/'
 hours_to_show = 12
 our_id = path.split('/')[2]
 
+# стандартный заголовок, который посылает python (блокируется cloudfare):
+# см. с пом. nc -l 127.0.0.1 80, поменяй zkb_url = 'http://127.0.0.1:80':
+#  GET /cache/tagged/killlist/?u=/character/1904811443/ HTTP/1.1
+#  Accept-Encoding: identity
+#  Host: 127.0.0.1:80
+#  User-Agent: Python-urllib/3.9
+#  Connection: close
+# заголовок, который отправляет curl (не блокируется cloudfare):
+#  HEAD /cache/tagged/killlist/?u=/character/1904811443/ HTTP/1.1
+#  Host: 127.0.0.1
+#  User-Agent: curl/7.74.0
+#  Accept: */*
+
 def load_json_from_url(url):
     try:
-        with urlopen(url, timeout=20) as response:
+        print(f"request: {url}")
+        headers = {
+            'User-Agent': 'curl/7.74.0',
+            'Accept-Encoding': 'gzip, deflate',
+            'Accept': 'application/json',
+        }
+        req = request.Request(url, headers=headers)
+        with request.urlopen(req, timeout=20) as response:
+            all_headers = req.header_items()
             if response.getcode() == 200:
-                data = json.loads(response.read().decode('utf-8'))
+                raw_data = response.read()
+                encoding = response.info().get('Content-Encoding')
+                if encoding == 'gzip':
+                    content = gzip.decompress(raw_data)
+                elif encoding == 'deflate':
+                    # -zlib.MAX_WBITS нужен для обработки сырого deflate без заголовков zlib
+                    content = zlib.decompress(raw_data, -zlib.MAX_WBITS)
+                else:
+                    content = raw_data
+                data = json.loads(content.decode('utf-8'))
                 return data
             else:
                 print(f"Error fetching data: {response.getcode()}")
@@ -29,9 +61,25 @@ def load_json_from_url(url):
 
 def load_html_from_url(url):
     try:
-        with urlopen(url, timeout=20) as response:
+        print(f"request: {url}")
+        headers = {
+            'User-Agent': 'curl/7.74.0',
+            'Accept-Encoding': 'gzip, deflate',
+            'Accept': 'application/json',
+        }
+        req = request.Request(url, headers=headers)
+        with request.urlopen(req, timeout=20) as response:
             if response.getcode() == 200:
-                return response.read().decode('utf-8')
+                raw_data = response.read()
+                encoding = response.info().get('Content-Encoding')
+                if encoding == 'gzip':
+                    content = gzip.decompress(raw_data)
+                elif encoding == 'deflate':
+                    # -zlib.MAX_WBITS нужен для обработки сырого deflate без заголовков zlib
+                    content = zlib.decompress(raw_data, -zlib.MAX_WBITS)
+                else:
+                    content = raw_data
+                return content.decode('utf-8')
             else:
                 print(f"Error fetching data: {response.getcode()}")
                 return None
@@ -65,7 +113,7 @@ class HttpHandler(BaseHTTPRequestHandler):
         after_epoch = current_utc_time - (3600 * hours_to_show)  # show kills N hours old or less
         #print(f"after_epoch = {after_epoch}")
         #json_data = load_json_from_url(f"{zkb_url}/cache/24hour/killlist/?s=94620140&u=" + path)
-        json_data = load_json_from_url(f"{zkb_url}/cache/bypass/killlist/?u=" + path)
+        json_data = load_json_from_url(f"{zkb_url}/cache/tagged/killlist/?u=" + path)
 
         content = ''
         if json_data:
@@ -73,7 +121,7 @@ class HttpHandler(BaseHTTPRequestHandler):
             print(f' last kill = {json_data[0]}')
             for kill in json_data:
                 kill_num: int = int(kill)
-                #print(f"kill = {kill}")
+                print(f"kill = {kill}")
                 if kill_num in obsolete_kills:
                     break  # ускорение загрузки страницы
 
